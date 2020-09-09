@@ -19,43 +19,45 @@ class ViewController: UIViewController {
     var messageNumber = -1
     let totalNumberOfImages = 9
     var audioPlayer: AVAudioPlayer!
+    var totalNumberOfSounds = 6
+    var soundNumber = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
     }
-    @IBAction func messageButtonPressed(_ sender: UIButton) {
-        let messages = ["You Are Awesome!", "You Are Great!","When The Genius Bar Needs Help, They Call You", "You Are Fantastic!", "Fabulous?, That's You!", "You've Got the Design Skills of Jony Ive!" ]
-        
-        var newMessageNumber: Int
-        
-        repeat {
-            newMessageNumber = Int.random(in: 0...messages.count-1)
-        } while messageNumber == newMessageNumber
-        messageNumber = newMessageNumber
-        messageLabel.text = messages[messageNumber]
-       
-        imageView.image = UIImage(named: "image\(Int.random(in: 0...totalNumberOfImages-1))")
-        var newImageNumber: Int
-        
-        repeat {
-            newImageNumber = Int.random(in: 0...totalNumberOfImages-1)
-        } while imageNumber == newImageNumber
-        imageNumber = newImageNumber
-        imageView.image = UIImage(named: "image\(imageNumber)")
-        
-        if let sound = NSDataAsset(name: "sound0") {
-            do {
-               try audioPlayer = AVAudioPlayer(data: sound.data)
-                audioPlayer.play()
-            } catch {print("😡 ERROR: \(error.localizedDescription) Could Not Initialize AVAudioPlayer Object")}
+    func playSound(name:String) {
+        if let sound = NSDataAsset(name: name) {
+                do {
+                   try audioPlayer = AVAudioPlayer(data: sound.data)
+                    audioPlayer.play()
+                } catch {print("😡 ERROR: \(error.localizedDescription) Could Not Initialize AVAudioPlayer Object")}
+                
+            }else {
+                print("😡 ERROR:Could Not Read Data from File sound0")
             
-        }else {
-            print("😡 ERROR:Could Not Read Data from File sound0")
-        
+        }
     }
     
-
-}
+    func nonRepeatingRandom(originalNumber:Int, upperLimit: Int) -> Int {
+        var newNumber: Int
+        
+        repeat {
+            newNumber = Int.random(in: 0...upperLimit)
+        } while originalNumber == newNumber
+        return newNumber
+        
+    }
+    @IBAction func messageButtonPressed(_ sender: UIButton) {
+        let messages = ["You Are Awesome!", "You Are Great!","When The Genius Bar Needs Help, They Call You", "You Are Fantastic!", "Fabulous?, That's You!", "You've Got the Design Skills of Jony Ive!" ]
+        messageNumber = nonRepeatingRandom(originalNumber: messageNumber, upperLimit: messages.count-1)
+        messageLabel.text = messages[messageNumber]
+       imageNumber = nonRepeatingRandom(originalNumber: imageNumber, upperLimit: totalNumberOfImages-1)
+        imageView.image = UIImage(named: "image\(Int.random(in: 0...totalNumberOfImages-1))")
+        imageView.image = UIImage(named: "image\(imageNumber)")
+        
+soundNumber = nonRepeatingRandom(originalNumber: soundNumber, upperLimit: totalNumberOfSounds-1)
+    playSound(name: "sound\(soundNumber)")
+    }
 
 }
